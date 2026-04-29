@@ -55,8 +55,6 @@ export default function App() {
   const [term, setTerm] = useState("60");
   const [balloon, setBalloon] = useState("65000");
 
-  const [commissionFlat, setCommissionFlat] = useState("0");
-  
   const lender = lenders[lenderKey];
 
   const calc = useMemo(() => {
@@ -69,10 +67,10 @@ export default function App() {
     const baseMonthly = pmt({ amount: naf, ratePA, months, balloon: balloonAmt });
     const monthly = baseMonthly + num(lender.monthlyAccountFee);
     const total = monthly * months + balloonAmt;
-        const lvr = price ? (naf / price) * 100 : 0;
+    const lvr = price ? (naf / price) * 100 : 0;
     const balloonPct = price ? (balloonAmt / price) * 100 : 0;
-    return { price, dep, tr, pay, equity, subtotal, fees, naf, months, balloonAmt, ratePA, monthly, total, interest: total - naf, weekly: monthly * 12 / 52, fortnightly: monthly * 12 / 26, commission, lvr, balloonPct };
-  }, [purchasePrice, deposit, trade, payout, term, balloon, rate, lender, commissionFlat, commissionPercent]);
+    return { price, dep, tr, pay, equity, subtotal, fees, naf, months, balloonAmt, ratePA, monthly, total, interest: total - naf, weekly: monthly * 12 / 52, fortnightly: monthly * 12 / 26, lvr, balloonPct };
+  }, [purchasePrice, deposit, trade, payout, term, balloon, rate, lender]);
 
   const ruleFlags = useMemo(() => {
     const flags = [];
@@ -102,7 +100,7 @@ Estimate only. Subject to approval.`;
   }
 
   function saveQuote() {
-    const quote = { id: Date.now(), created: new Date().toLocaleString(), clientName, clientPhone, vehicle, stockNo, lenderKey, purchasePrice, deposit, trade, payout, rate, term, balloon, lenders, commissionFlat, commissionPercent };
+    const quote = { id: Date.now(), created: new Date().toLocaleString(), clientName, clientPhone, vehicle, stockNo, lenderKey, purchasePrice, deposit, trade, payout, rate, term, balloon, lenders };
     const next = [quote, ...quotes].slice(0, 50);
     setQuotes(next);
     localStorage.setItem("cavaloResponsiveQuotes", JSON.stringify(next));
@@ -113,7 +111,7 @@ Estimate only. Subject to approval.`;
     setClientName(q.clientName || ""); setClientPhone(q.clientPhone || ""); setVehicle(q.vehicle || ""); setStockNo(q.stockNo || "");
     setLenderKey(q.lenderKey || "VWFS"); setPurchasePrice(q.purchasePrice); setDeposit(q.deposit); setTrade(q.trade); setPayout(q.payout);
     setRate(q.rate); setTerm(q.term); setBalloon(q.balloon); setLenders(q.lenders || DEFAULT_LENDERS);
-    setCommissionFlat(q.commissionFlat || "0"); setCommissionPercent(q.commissionPercent || "0"); setSheet(null);
+    setSheet(null);
   }
 
   function pdf() {
@@ -143,7 +141,7 @@ Estimate only. Subject to approval.`;
     else { navigator.clipboard.writeText(quoteText); alert("Quote copied."); }
   }
 
-  const common = { lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, quotes, loadQuote, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionFlat, setCommissionFlat,  updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, mode, setMode, showRepaymentStructure, setShowRepaymentStructure };
+  const common = { lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, quotes, loadQuote, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, mode, setMode, showRepaymentStructure, setShowRepaymentStructure };
 
   return (
     <>
@@ -164,7 +162,7 @@ function ModeToggle({ mode, setMode }) {
 }
 
 function MobileApp(props) {
-  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon,  updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, quotes, loadQuote } = props;
+  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, quotes, loadQuote } = props;
   return (
     <div className={`mobile-shell mode-${mode}`}>
       <div className="phone">
@@ -197,7 +195,7 @@ function MobileApp(props) {
 }
 
 function DesktopApp(props) {
-  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon,  updateFee, saveQuote, pdf, quoteText, ruleFlags, quotes, loadQuote } = props;
+  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, updateFee, saveQuote, pdf, quoteText, ruleFlags, quotes, loadQuote } = props;
   return (
     <div className={`desktop-shell mode-${mode}`}>
       <header className="desktop-top">
