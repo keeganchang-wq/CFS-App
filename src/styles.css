@@ -71,3 +71,97 @@
 .desktop-two-col .panel {
   min-height: 0;
 }
+
+
+/* V3 desktop overlap fix */
+.desktop-layout {
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+.desktop-left,
+.desktop-right {
+  min-width: 0;
+}
+
+.desktop-left {
+  overflow: visible;
+}
+
+.desktop-right {
+  width: 100%;
+}
+
+.desktop-left .hero {
+  width: 100%;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.summary-grid .metric {
+  min-width: 0;
+}
+
+.summary-grid .metric:nth-child(3) {
+  grid-column: 1 / -1;
+}
+
+.metric b {
+  overflow-wrap: anywhere;
+  line-height: 1.1;
+}
+
+.desktop-two-col {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.panel,
+.card {
+  min-width: 0;
+}
+
+.desktop-lender-row {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.desktop-lender-row label {
+  min-width: 0;
+}
+
+@media (min-width: 1200px) {
+  .desktop-layout {
+    max-width: 1380px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .desktop-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .desktop-left {
+    display: grid;
+    grid-template-columns: 360px minmax(0, 1fr);
+    gap: 14px;
+    align-items: start;
+  }
+
+  .desktop-left .summary-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .desktop-left .panel {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 760px) {
+  .desktop-left {
+    grid-template-columns: 1fr;
+  }
+}
