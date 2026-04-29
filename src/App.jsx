@@ -38,6 +38,7 @@ export default function App() {
   const [lenders, setLenders] = useState(DEFAULT_LENDERS);
   const [tab, setTab] = useState("purchase");
   const [sheet, setSheet] = useState(null);
+  const [showRepaymentStructure, setShowRepaymentStructure] = useState(true);
   const [quotes, setQuotes] = useState(loadSaved());
 
   const [clientName, setClientName] = useState("");
@@ -144,7 +145,7 @@ Estimate only. Subject to approval.`;
     else { navigator.clipboard.writeText(quoteText); alert("Quote copied."); }
   }
 
-  const common = { lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, quotes, loadQuote, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionFlat, setCommissionFlat, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, mode, setMode };
+  const common = { lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, quotes, loadQuote, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionFlat, setCommissionFlat, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, mode, setMode, showRepaymentStructure, setShowRepaymentStructure };
 
   return (
     <>
@@ -165,7 +166,7 @@ function ModeToggle({ mode, setMode }) {
 }
 
 function MobileApp(props) {
-  const { mode, setMode, lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, quotes, loadQuote } = props;
+  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, quotes, loadQuote } = props;
   return (
     <div className={`mobile-shell mode-${mode}`}>
       <div className="phone">
@@ -177,7 +178,16 @@ function MobileApp(props) {
           <Tabs tab={tab} setTab={setTab}/>
           {tab === "purchase" && <Card title="Purchase Details" icon={<FileText/>}><div className="grid2"><Field label="Purchase" value={purchasePrice} setValue={setPurchasePrice} prefix="$"/><Field label="Deposit" value={deposit} setValue={setDeposit} prefix="$"/><Field label="Trade" value={trade} setValue={setTrade} prefix="$"/><Field label="Payout" value={payout} setValue={setPayout} prefix="$"/></div><MiniRows rows={[["Equity", money(calc.equity)], ["Subtotal", money(calc.subtotal)], ["LVR", `${calc.lvr.toFixed(2)}%`]]}/></Card>}
           {tab === "fees" && <Card title="Lender Fees" icon={<Percent/>}><div className="grid2"><Field label="Origination" value={lender.originationFee} setValue={(v)=>updateFee("originationFee", v)} prefix="$"/><Field label="Establishment" value={lender.establishmentFee} setValue={(v)=>updateFee("establishmentFee", v)} prefix="$"/><Field label="PPSR" value={lender.ppsr} setValue={(v)=>updateFee("ppsr", v)} prefix="$"/><Field label="Monthly Fee" value={lender.monthlyAccountFee} setValue={(v)=>updateFee("monthlyAccountFee", v)} prefix="$"/></div><MiniRows rows={[["Total capitalised fees", money(calc.fees)], ["Monthly fee added", money(num(lender.monthlyAccountFee))]]}/></Card>}
-          {tab === "summary" && <Card title="Repayment Summary" icon={<Calculator/>}><div className="grid2"><Field label="Rate" value={rate} setValue={setRate} suffix="%"/><Field label="Term" value={term} setValue={setTerm} suffix="mths"/><Field label="Balloon" value={balloon} setValue={setBalloon} prefix="$"/><Field label="Comm %" value={commissionPercent} setValue={setCommissionPercent} suffix="%"/></div><MiniRows rows={[["Amount financed", money(calc.naf)], ["Balloon %", `${calc.balloonPct.toFixed(2)}%`], ["Weekly", money(calc.weekly)], ["Fortnightly", money(calc.fortnightly)], ["Total payable", money(calc.total)], ["Commission est.", money(calc.commission)]]}/></Card>}
+          {tab === "summary" && <Card title="Repayment Structure" icon={<Calculator/>}>
+            <div className="section-toggle">
+              <span>Show repayment structure</span>
+              <button onClick={() => setShowRepaymentStructure(!showRepaymentStructure)}>{showRepaymentStructure ? "Hide" : "Show"}</button>
+            </div>
+            {showRepaymentStructure && <>
+              <div className="grid2"><Field label="Rate" value={rate} setValue={setRate} suffix="%"/><Field label="Term" value={term} setValue={setTerm} suffix="mths"/><Field label="Balloon" value={balloon} setValue={setBalloon} prefix="$"/><Field label="Comm %" value={commissionPercent} setValue={setCommissionPercent} suffix="%"/></div>
+              <MiniRows rows={[["Amount financed", money(calc.naf)], ["Balloon %", `${calc.balloonPct.toFixed(2)}%`], ["Weekly", money(calc.weekly)], ["Fortnightly", money(calc.fortnightly)], ["Total payable", money(calc.total)]]}/>
+            </>}
+          </Card>}
           <section className="tools"><Tool title="Rules Engine" icon={<Wrench/>} onClick={()=>setSheet("rules")} /><Tool title="Deal Structuring" icon={<BadgeDollarSign/>} onClick={()=>setSheet("structure")} /><Tool title="Saved Quotes" icon={<Search/>} onClick={()=>setSheet("quotes")} /></section>
           <p className="disclaimer">Estimate only. Subject to approval, lender policy and final contract terms.</p>
         </main>
@@ -189,7 +199,7 @@ function MobileApp(props) {
 }
 
 function DesktopApp(props) {
-  const { mode, setMode, lenderKey, setLenderKey, lenders, lender, calc, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, quoteText, ruleFlags, quotes, loadQuote } = props;
+  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, quoteText, ruleFlags, quotes, loadQuote } = props;
   return (
     <div className={`desktop-shell mode-${mode}`}>
       <header className="desktop-top">
@@ -200,18 +210,27 @@ function DesktopApp(props) {
       <main className="desktop-layout">
         <section className="desktop-left">
           <Hero monthly={calc.monthly} />
-          <div className="summary-grid"><Metric label="Weekly" value={money(calc.weekly)} /><Metric label="Fortnightly" value={money(calc.fortnightly)} /><Metric label="Amount Financed" value={money(calc.naf)} /><Metric label="Commission Est." value={money(calc.commission)} /></div>
+          <div className="summary-grid"><Metric label="Weekly" value={money(calc.weekly)} /><Metric label="Fortnightly" value={money(calc.fortnightly)} /><Metric label="Amount Financed" value={money(calc.naf)} /></div>
           <Panel title="Saved Quotes" icon={<Save />}><div className="saved-list">{quotes.length ? quotes.map(q => <button key={q.id} onClick={()=>loadQuote(q)}><b>{q.clientName || "Unnamed Client"}</b><span>{q.vehicle || q.created} · {DEFAULT_LENDERS[q.lenderKey]?.name}</span></button>) : <p className="muted">No saved quotes yet.</p>}</div></Panel>
         </section>
         <section className="desktop-right">
           <Panel title="Client Profile" icon={<User />}><div className="grid4"><Field label="Client Name" value={clientName} setValue={setClientName}/><Field label="Phone" value={clientPhone} setValue={setClientPhone}/><Field label="Vehicle" value={vehicle} setValue={setVehicle}/><Field label="Stock / Ref" value={stockNo} setValue={setStockNo}/></div></Panel>
-          <Panel title="Lender Selection" icon={<FileText />}><div className="desktop-lender-row"><label><span>Lender</span><select value={lenderKey} onChange={(e)=>setLenderKey(e.target.value)}>{Object.entries(lenders).map(([key, val]) => <option key={key} value={key}>{val.name}</option>)}</select></label><Metric label="Total Capitalised Fees" value={money(calc.fees)} /><Metric label="Monthly Account Fee" value={money(num(lender.monthlyAccountFee))} /></div></Panel>
+          <Panel title="Lender Selection" icon={<FileText />}><div className="desktop-lender-row lender-row-single"><label><span>Lender</span><select value={lenderKey} onChange={(e)=>setLenderKey(e.target.value)}>{Object.entries(lenders).map(([key, val]) => <option key={key} value={key}>{val.name}</option>)}</select></label></div></Panel>
           <div className="desktop-two-col">
             <Panel title="Purchase Details" icon={<FileText />}><div className="grid2"><Field label="Purchase Price" value={purchasePrice} setValue={setPurchasePrice} prefix="$"/><Field label="Cash Deposit" value={deposit} setValue={setDeposit} prefix="$"/><Field label="Trade Allowance" value={trade} setValue={setTrade} prefix="$"/><Field label="Existing Payout" value={payout} setValue={setPayout} prefix="$"/></div><MiniRows rows={[["Total Equity", money(calc.equity)], ["Subtotal", money(calc.subtotal)], ["LVR", `${calc.lvr.toFixed(2)}%`]]}/></Panel>
             <Panel title="Lender Fees" icon={<Percent />}><div className="grid2"><Field label="Origination" value={lender.originationFee} setValue={(v)=>updateFee("originationFee", v)} prefix="$"/><Field label="Establishment" value={lender.establishmentFee} setValue={(v)=>updateFee("establishmentFee", v)} prefix="$"/><Field label="PPSR" value={lender.ppsr} setValue={(v)=>updateFee("ppsr", v)} prefix="$"/><Field label="Monthly Fee" value={lender.monthlyAccountFee} setValue={(v)=>updateFee("monthlyAccountFee", v)} prefix="$"/></div></Panel>
           </div>
           <div className="desktop-two-col">
-            <Panel title="Repayment Summary" icon={<Calculator />}><div className="grid2"><Field label="Rate" value={rate} setValue={setRate} suffix="%"/><Field label="Term" value={term} setValue={setTerm} suffix="months"/><Field label="Balloon" value={balloon} setValue={setBalloon} prefix="$"/><Field label="Commission %" value={commissionPercent} setValue={setCommissionPercent} suffix="%"/></div><MiniRows rows={[["Balloon %", `${calc.balloonPct.toFixed(2)}%`], ["Total Payable", money(calc.total)], ["Interest Component", money(calc.interest)]]}/></Panel>
+            <Panel title="Repayment Structure" icon={<Calculator />}>
+              <div className="section-toggle">
+                <span>Show repayment structure</span>
+                <button onClick={() => setShowRepaymentStructure(!showRepaymentStructure)}>{showRepaymentStructure ? "Hide" : "Show"}</button>
+              </div>
+              {showRepaymentStructure && <>
+                <div className="grid2"><Field label="Rate" value={rate} setValue={setRate} suffix="%"/><Field label="Term" value={term} setValue={setTerm} suffix="months"/><Field label="Balloon" value={balloon} setValue={setBalloon} prefix="$"/><Field label="Commission %" value={commissionPercent} setValue={setCommissionPercent} suffix="%"/></div>
+                <MiniRows rows={[["Balloon %", `${calc.balloonPct.toFixed(2)}%`], ["Total Payable", money(calc.total)], ["Interest Component", money(calc.interest)]]}/>
+              </>}
+            </Panel>
             <Panel title="Rules / Deal Structuring" icon={<Wrench />}><div className="rules">{ruleFlags.map((r, i) => <p key={i}>{r}</p>)}<p><BadgeDollarSign size={16}/> Deal structuring placeholder: future target payment solver, lender policy caps and approval rules.</p></div></Panel>
           </div>
         </section>
@@ -233,7 +252,7 @@ function Sheets(props) {
 }
 
 function Brand(){ return <div><h1>CAVALO</h1><p><i/>PRESTIGE<i/></p></div>; }
-function Hero({ monthly }) { return <section className="hero"><Car size={28}/><p>FINANCE CALCULATOR</p><h2>{money(monthly)}</h2><span>estimated monthly repayment</span></section>; }
+function Hero({ monthly }) { return <section className="hero"><Car size={28}/><p>FINANCE CALCULATOR</p><span className="hero-metric-label">MONTHLY</span><h2>{money(monthly)}</h2></section>; }
 function LenderDropdown({ lenderKey, setLenderKey, lenders, lender }) { return <section className="lender-select-card"><div className="lender-select-label"><span>LENDER</span><b>{lender.name}</b></div><div className="select-wrap"><select value={lenderKey} onChange={(e)=>setLenderKey(e.target.value)}>{Object.entries(lenders).map(([key, val]) => <option key={key} value={key}>{val.name}</option>)}</select><ChevronDown size={20}/></div></section>; }
 function Tabs({ tab, setTab }) { return <nav className="tabs"><button onClick={()=>setTab("purchase")} className={tab==="purchase"?"active":""}>Purchase</button><button onClick={()=>setTab("fees")} className={tab==="fees"?"active":""}>Fees</button><button onClick={()=>setTab("summary")} className={tab==="summary"?"active":""}>Summary</button></nav>; }
 function Card({title, icon, children}) { return <section className="card"><div className="card-head">{React.cloneElement(icon,{size:20})}<h3>{title}</h3></div>{children}</section>; }
