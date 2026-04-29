@@ -1,1 +1,1 @@
-Cavalo dealership-level finance app with premium blended lender dropdown. Upload to Vercel. Build command: npm run build. Output directory: dist.
+Cavalo desktop finance calculator. Upload to Vercel. Build command: npm run build. Output directory: dist.
