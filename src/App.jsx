@@ -56,8 +56,7 @@ export default function App() {
   const [balloon, setBalloon] = useState("65000");
 
   const [commissionFlat, setCommissionFlat] = useState("0");
-  const [commissionPercent, setCommissionPercent] = useState("0");
-
+  
   const lender = lenders[lenderKey];
 
   const calc = useMemo(() => {
@@ -70,8 +69,7 @@ export default function App() {
     const baseMonthly = pmt({ amount: naf, ratePA, months, balloon: balloonAmt });
     const monthly = baseMonthly + num(lender.monthlyAccountFee);
     const total = monthly * months + balloonAmt;
-    const commission = num(commissionFlat) + (naf * num(commissionPercent) / 100);
-    const lvr = price ? (naf / price) * 100 : 0;
+        const lvr = price ? (naf / price) * 100 : 0;
     const balloonPct = price ? (balloonAmt / price) * 100 : 0;
     return { price, dep, tr, pay, equity, subtotal, fees, naf, months, balloonAmt, ratePA, monthly, total, interest: total - naf, weekly: monthly * 12 / 52, fortnightly: monthly * 12 / 26, commission, lvr, balloonPct };
   }, [purchasePrice, deposit, trade, payout, term, balloon, rate, lender, commissionFlat, commissionPercent]);
@@ -145,7 +143,7 @@ Estimate only. Subject to approval.`;
     else { navigator.clipboard.writeText(quoteText); alert("Quote copied."); }
   }
 
-  const common = { lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, quotes, loadQuote, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionFlat, setCommissionFlat, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, mode, setMode, showRepaymentStructure, setShowRepaymentStructure };
+  const common = { lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, quotes, loadQuote, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionFlat, setCommissionFlat,  updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, mode, setMode, showRepaymentStructure, setShowRepaymentStructure };
 
   return (
     <>
@@ -166,7 +164,7 @@ function ModeToggle({ mode, setMode }) {
 }
 
 function MobileApp(props) {
-  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, quotes, loadQuote } = props;
+  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, tab, setTab, sheet, setSheet, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon,  updateFee, saveQuote, pdf, shareQuote, quoteText, ruleFlags, quotes, loadQuote } = props;
   return (
     <div className={`mobile-shell mode-${mode}`}>
       <div className="phone">
@@ -199,7 +197,7 @@ function MobileApp(props) {
 }
 
 function DesktopApp(props) {
-  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon, commissionPercent, setCommissionPercent, updateFee, saveQuote, pdf, quoteText, ruleFlags, quotes, loadQuote } = props;
+  const { mode, setMode, showRepaymentStructure, setShowRepaymentStructure, lenderKey, setLenderKey, lenders, lender, calc, clientName, setClientName, clientPhone, setClientPhone, vehicle, setVehicle, stockNo, setStockNo, purchasePrice, setPurchasePrice, deposit, setDeposit, trade, setTrade, payout, setPayout, rate, setRate, term, setTerm, balloon, setBalloon,  updateFee, saveQuote, pdf, quoteText, ruleFlags, quotes, loadQuote } = props;
   return (
     <div className={`desktop-shell mode-${mode}`}>
       <header className="desktop-top">
@@ -227,7 +225,7 @@ function DesktopApp(props) {
                 <button onClick={() => setShowRepaymentStructure(!showRepaymentStructure)}>{showRepaymentStructure ? "Hide" : "Show"}</button>
               </div>
               {showRepaymentStructure && <>
-                <div className="grid2"><Field label="Rate" value={rate} setValue={setRate} suffix="%"/><Field label="Term" value={term} setValue={setTerm} suffix="months"/><Field label="Balloon" value={balloon} setValue={setBalloon} prefix="$"/><Field label="Commission %" value={commissionPercent} setValue={setCommissionPercent} suffix="%"/></div>
+                <div className="grid2"><Field label="Rate" value={rate} setValue={setRate} suffix="%"/><Field label="Term" value={term} setValue={setTerm} suffix="months"/><Field label="Balloon" value={balloon} setValue={setBalloon} prefix="$"/></div>
                 <MiniRows rows={[["Balloon %", `${calc.balloonPct.toFixed(2)}%`], ["Total Payable", money(calc.total)], ["Interest Component", money(calc.interest)]]}/>
               </>}
             </Panel>
