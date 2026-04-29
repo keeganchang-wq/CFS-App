@@ -155,11 +155,21 @@ Estimate only. Subject to approval.`;
             <User size={18}/><div><b>{clientName || "Client Profile"}</b><span>{vehicle || "Tap to add client + vehicle"}</span></div>
           </section>
 
-          <section className="lenders">
-            {Object.entries(lenders).map(([key, val]) => (
-              <button key={key} onClick={() => setLenderKey(key)} className={key === lenderKey ? "active" : ""}>{val.name}</button>
-            ))}
-          </section>
+         <section className="lender-dropdown">
+  <label className="dropdown-label">LENDER</label>
+
+  <select
+    value={lenderKey}
+    onChange={(e) => setLenderKey(e.target.value)}
+    className="dropdown"
+  >
+    {Object.entries(lenders).map(([key, val]) => (
+      <option key={key} value={key}>
+        {val.name}
+      </option>
+    ))}
+  </select>
+</section>
 
           <nav className="tabs">
             <button onClick={()=>setTab("purchase")} className={tab==="purchase"?"active":""}>Purchase</button>
