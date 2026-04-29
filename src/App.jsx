@@ -1,6 +1,6 @@
 
 import React, { useMemo, useState } from "react";
-import { Calculator, Car, FileText, Mail, MessageCircle, MoreHorizontal, Percent, Save, Search, User, Wrench, X, BadgeDollarSign } from "lucide-react";
+import { Calculator, Car, ChevronDown, FileText, Mail, MessageCircle, MoreHorizontal, Percent, Save, Search, User, Wrench, X, BadgeDollarSign } from "lucide-react";
 import { jsPDF } from "jspdf";
 
 const DEFAULT_LENDERS = {
@@ -155,21 +155,20 @@ Estimate only. Subject to approval.`;
             <User size={18}/><div><b>{clientName || "Client Profile"}</b><span>{vehicle || "Tap to add client + vehicle"}</span></div>
           </section>
 
-         <section className="lender-dropdown">
-  <label className="dropdown-label">LENDER</label>
-
-  <select
-    value={lenderKey}
-    onChange={(e) => setLenderKey(e.target.value)}
-    className="dropdown"
-  >
-    {Object.entries(lenders).map(([key, val]) => (
-      <option key={key} value={key}>
-        {val.name}
-      </option>
-    ))}
-  </select>
-</section>
+          <section className="lender-select-card">
+            <div className="lender-select-label">
+              <span>LENDER</span>
+              <b>{lender.name}</b>
+            </div>
+            <div className="select-wrap">
+              <select value={lenderKey} onChange={(e) => setLenderKey(e.target.value)}>
+                {Object.entries(lenders).map(([key, val]) => (
+                  <option key={key} value={key}>{val.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={20} />
+            </div>
+          </section>
 
           <nav className="tabs">
             <button onClick={()=>setTab("purchase")} className={tab==="purchase"?"active":""}>Purchase</button>
@@ -251,13 +250,8 @@ Estimate only. Subject to approval.`;
 }
 
 function sheetTitle(s){ return ({send:"Send Quote",client:"Client Profile",quotes:"Saved Quotes",rules:"Rules Engine",structure:"Deal Structuring",saved:"Saved"})[s] || "Menu"; }
-
-function Card({title, icon, children}) {
-  return <section className="card"><div className="card-head">{React.cloneElement(icon,{size:20})}<h3>{title}</h3></div>{children}</section>;
-}
-function Field({label,value,setValue,prefix,suffix}) {
-  return <label className="field"><span>{label}</span><div>{prefix && <em>{prefix}</em>}<input value={value} onChange={e=>setValue(e.target.value)} />{suffix && <em>{suffix}</em>}</div></label>;
-}
+function Card({title, icon, children}) { return <section className="card"><div className="card-head">{React.cloneElement(icon,{size:20})}<h3>{title}</h3></div>{children}</section>; }
+function Field({label,value,setValue,prefix,suffix}) { return <label className="field"><span>{label}</span><div>{prefix && <em>{prefix}</em>}<input value={value} onChange={e=>setValue(e.target.value)} />{suffix && <em>{suffix}</em>}</div></label>; }
 function MiniRows({rows}) { return <div className="minirows">{rows.map(([a,b])=><div key={a}><span>{a}</span><b>{b}</b></div>)}</div>; }
 function Tool({title, icon, onClick}) { return <button className="tool" onClick={onClick}>{React.cloneElement(icon,{size:18})}<span>{title}</span></button>; }
 function Sheet({title,onClose,children}) { return <div className="overlay"><div className="sheet"><div className="sheet-head"><h3>{title}</h3><button onClick={onClose}><X size={20}/></button></div>{children}</div></div>; }
