@@ -1,1 +1,1 @@
-Cavalo desktop finance calculator. Upload to Vercel. Build command: npm run build. Output directory: dist.
+Combined responsive Cavalo app. Auto loads mobile under 768px and desktop above 768px. Includes manual Auto/Mobile/Desktop toggle.
